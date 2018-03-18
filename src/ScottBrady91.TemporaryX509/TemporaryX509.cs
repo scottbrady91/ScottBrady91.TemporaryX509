@@ -15,7 +15,7 @@ namespace ScottBrady91.TemporaryX509
 {
     public class TemporaryX509
     {
-        public static SigningCredentials CreateSigningCredentials(string algorithm, string digest)
+        public static SigningCredentials CreateSigningCredentials(string algorithm = SecurityAlgorithms.RsaSha256, string digest = null)
         {
             return new SigningCredentials(CreateX509SecurityKey(), algorithm, digest);
         }

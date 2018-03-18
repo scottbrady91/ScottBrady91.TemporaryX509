@@ -13,7 +13,7 @@ namespace ScottBrady91.TemporaryX509.Tests
     {
         public static TheoryData<TestData> Data = new TheoryData<TestData>
         {
-            new TestData(new JwtSecurityTokenHandler(), SecurityAlgorithms.RsaSha256, SecurityAlgorithms.Sha256Digest),
+            new TestData(new JwtSecurityTokenHandler(), SecurityAlgorithms.RsaSha256, null),
             new TestData(new Saml2SecurityTokenHandler(), SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest),
             new TestData(new SamlSecurityTokenHandler(), SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest)
         };
