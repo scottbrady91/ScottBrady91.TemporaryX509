@@ -10,8 +10,10 @@ Hardcoded with:
 
 - Password: password
 
-## Installation
+## Usage
 
-```
-services.AddScoped<IPasswordHasher<ApplicationUser>, ScryptPasswordHasher<ApplicationUser>>();
+```c#
+TemporaryX509.CreateX509Certificate2()
+TemporaryX509.CreateX509SecurityKey()
+TemporaryX509.CreateSigningCredentials()
 ```
