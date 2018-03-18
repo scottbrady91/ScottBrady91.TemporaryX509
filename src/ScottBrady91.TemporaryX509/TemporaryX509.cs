@@ -15,38 +15,39 @@ namespace ScottBrady91.TemporaryX509
 {
     public class TemporaryX509
     {
-        public static SigningCredentials CreateSigningCredentials()
+        public static SigningCredentials CreateSigningCredentials(string algorithm, string digest)
         {
-            return new SigningCredentials(CreateX509SecurityKey(), "RS256");
+            return new SigningCredentials(CreateX509SecurityKey(), algorithm, digest);
         }
 
         public static X509SecurityKey CreateX509SecurityKey()
         {
-            var certificate = CreateX509Certificate2();
-            return new X509SecurityKey(certificate);
+            return new X509SecurityKey(CreateX509Certificate2());
         }
 
         public static X509Certificate2 CreateX509Certificate2()
         {
+            // generate new key pair
             var keypairgen = new RsaKeyPairGenerator();
-            keypairgen.Init(new KeyGenerationParameters(new SecureRandom(), 1024));
+            keypairgen.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
             var keypair = keypairgen.GenerateKeyPair();
 
-            ISignatureFactory signatureFactory =
-                new Asn1SignatureFactory("SHA512WITHRSA", keypair.Private, new SecureRandom());
-            var gen = new X509V3CertificateGenerator();
-            var cn = new X509Name("CN=test");
-            var sn = BigInteger.ProbablePrime(120, new SecureRandom());
+            // generate x509
+            var signatureFactory = new Asn1SignatureFactory("SHA256WithRSA", keypair.Private, new SecureRandom());
+            var generator = new X509V3CertificateGenerator();
+            var commonName = new X509Name("CN=test");
+            var serialNumber = BigInteger.ProbablePrime(120, new SecureRandom());
 
-            gen.SetSerialNumber(sn);
-            gen.SetSubjectDN(cn);
-            gen.SetIssuerDN(cn);
-            gen.SetNotAfter(DateTime.Now.AddYears(1));
-            gen.SetNotBefore(DateTime.Now.Subtract(new TimeSpan(7, 0, 0, 0)));
-            gen.SetPublicKey(keypair.Public);
+            generator.SetSerialNumber(serialNumber);
+            generator.SetSubjectDN(commonName);
+            generator.SetIssuerDN(commonName);
+            generator.SetNotAfter(DateTime.UtcNow.AddYears(99));
+            generator.SetNotBefore(DateTime.UtcNow);
+            generator.SetPublicKey(keypair.Public);
             
-            var bouncyCert = gen.Generate(signatureFactory);
+            var bouncyCert = generator.Generate(signatureFactory);
             
+            // convert to .NET certificate
             var store = new Pkcs12Store();
             var alias = bouncyCert.SubjectDN.ToString();
             var certificateEntry = new X509CertificateEntry(bouncyCert);
